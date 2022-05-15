@@ -2,6 +2,7 @@ package com.example.versionfinalejt
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.core.content.ContextCompat
 
 
 import com.example.versionfinalejt.R
@@ -17,6 +18,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 
 import com.example.versionfinalejt.model.StationVelib
+import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.runBlocking
@@ -47,7 +49,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
-
+    private val bicycleIcon: BitmapDescriptor by lazy {
+        val color = ContextCompat.getColor(this, R.color.colorPrimary)
+        BitmapHelper.vectorToBitmap(this, R.drawable.ic_directions_bike_black_24dp, color)
+    }
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(paris,11f))
@@ -63,6 +68,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 MarkerOptions()
                     .position(coordoneeStation)
                     .title(it.name)
+                    .icon(bicycleIcon)
             )
         }
     }
