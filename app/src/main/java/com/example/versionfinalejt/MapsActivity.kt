@@ -64,6 +64,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     .position(coordoneeStation)
                     .title(it.name)
                     .icon(bicycleIcon)
+                    .snippet(it.numBikesAvailable.toString())
             )
         }
 
