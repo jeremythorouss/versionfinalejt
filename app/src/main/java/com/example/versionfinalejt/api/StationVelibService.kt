@@ -1,14 +1,12 @@
 package com.example.versionfinalejt.api
-
+/*
 import com.example.versionfinalejt.model.StationVelib
 import retrofit2.http.GET
 
-interface StationVelibService {
-    @GET("station_information.json")
-    suspend fun getLieuStation(): data
+interface StationVelibService{
+    @GET("station_status.json")
+    suspend fun getServiceStation():data
 }
-
-data class data(val data: getLieuStationResult)
-data class getLieuStationResult(val stations : List<StationVelib>)
-//data class StationVelib(val station_id:Int,val name:String,val lat:Float,val lon:Float)
-
+data class data(val data: getServiceStationResult)
+data class getServiceStationResult(val stations : List<StationVelib>)
+//data class StationVelib(val station_id:Int,val name:String,val lat:Float,val lon:Float)*/

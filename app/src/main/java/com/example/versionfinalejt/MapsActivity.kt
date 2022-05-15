@@ -5,22 +5,17 @@ import android.os.Bundle
 import androidx.core.content.ContextCompat
 
 
-import com.example.versionfinalejt.R
-
 import com.example.versionfinalejt.databinding.ActivityMapsBinding
-import com.example.versionfinalejt.api.StationVelibService
+import com.example.versionfinalejt.api.StationVelibInitiale
 
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
 
 import com.example.versionfinalejt.model.StationVelib
-import com.google.android.gms.maps.model.BitmapDescriptor
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -71,6 +66,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     .icon(bicycleIcon)
             )
         }
+
+
     }
 
     private fun synchroApi() {
@@ -87,7 +84,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .client(client)
             .build()
 
-        val service = retrofit.create(StationVelibService::class.java)
+        val service = retrofit.create(StationVelibInitiale::class.java)
 
         runBlocking {
             val result = service.getLieuStation()
@@ -101,6 +98,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
     }
+
+    /*
+    override fun onMarkerClick(marker: Marker)  {
+
+    }*/
+
 
 
 }
