@@ -5,17 +5,22 @@ import android.os.Bundle
 import androidx.core.content.ContextCompat
 
 
-import com.example.versionfinalejt.databinding.ActivityMapsBinding
-import com.example.versionfinalejt.api.StationVelibInitiale
+import com.example.versionfinalejt.R
 
+import com.example.versionfinalejt.databinding.ActivityMapsBinding
+import com.example.versionfinalejt.api.StationVelibService
+import com.example.versionfinalejt.model.MarkerHolder
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 
 import com.example.versionfinalejt.model.StationVelib
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -25,6 +30,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     val listStationVelib: MutableList<StationVelib> = mutableListOf()
+    val markerHolderMap = HashMap<String, MarkerHolder>()
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
@@ -56,18 +62,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
         synchroApi()
+        addMarker()
 
-        listStationVelib.map{
-            val coordoneeStation = LatLng(it.lat.toDouble(), it.lon.toDouble())
-            mMap.addMarker(
-                MarkerOptions()
-                    .position(coordoneeStation)
-                    .title(it.name)
-                    .icon(bicycleIcon)
-                    .snippet(it.numBikesAvailable.toString())
-            )
-        }
-
+        mMap.setInfoWindowAdapter(CustomInfoWindowAdapter(this,markerHolderMap))
 
     }
 
@@ -85,26 +82,50 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .client(client)
             .build()
 
-        val service = retrofit.create(StationVelibInitiale::class.java)
+        val service = retrofit.create(StationVelibService::class.java)
 
         runBlocking {
-            val result = service.getLieuStation()
-            //Log.d(TAG, "synchroApi: ${result}")
-            val stations = result.data.stations
+            val resultLieu = service.getLieuStation()
+            val resultStatus = service.getStatusStation()
 
-            stations.map{
-                listStationVelib.add(it)
+
+            val stationsLieu = resultLieu.data.stations
+            val stationsStatus = resultStatus.data.stations
+
+            for (i in stationsLieu) {
+                for (j in stationsStatus) {
+                    if (i.station_id == j.station_id) {
+
+                        val stationVelib = StationVelib(
+                            i.station_id,
+                            i.name,
+                            i.lat,
+                            i.lon,
+                            i.capacity,
+                            j.num_bikes_available,
+                            j.num_docks_available,
+                        )
+                        listStationVelib.add(stationVelib)
+                        break
+                    }
+                }
             }
-
         }
-
     }
+        private fun addMarker(){
 
-    /*
-    override fun onMarkerClick(marker: Marker)  {
-
-    }*/
-
-
+            listStationVelib.map{
+                val coordoneeStation = LatLng(it.lat.toDouble(), it.lon.toDouble())
+                val marker = mMap.addMarker(
+                    MarkerOptions()
+                        .position(coordoneeStation)
+                        .title(it.name)
+                        .snippet(it.station_id.toString())
+                        .icon(bicycleIcon)
+                )
+                val mHolder=MarkerHolder(it.lat,it.lon,it.capacity,it.nbrVelosDispo,it.nbrDockDispo)
+                markerHolderMap.put(marker!!.id, mHolder);
+            }
+        }
 
 }
