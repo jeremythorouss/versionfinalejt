@@ -102,7 +102,7 @@
                 android:textSize="14sp" />
         </LinearLayout>
 
-        <ImageButton
+        <!--<ImageButton
             android:id="@+id/infoWindowButton"
             style="@style/Widget.AppCompat.ImageButton"
             android:layout_width="100dp"
@@ -113,7 +113,7 @@
             android:clickable="true"
             android:elevation="30dp"
             android:scaleType="fitCenter"
-            android:src="@android:drawable/btn_star_big_on" />
+            android:src="@android:drawable/btn_star_big_on" />-->
     </LinearLayout>
 
 

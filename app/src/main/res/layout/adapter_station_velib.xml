@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_margin="8dp"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="50dp"
+            tools:src="@drawable/logovelib"
+            android:layout_height="50dp"
+            android:contentDescription="logo application velib">
+
+        </ImageView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="8dp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/adapter_stationvelib_name_textview"
+                android:layout_width="match_parent"
+                tools:text="Nom Station"
+                android:layout_height="wrap_content">
+            </TextView>
+            <TextView
+                android:id="@+id/adapter_stationvelib_id_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ID station">
+            </TextView>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

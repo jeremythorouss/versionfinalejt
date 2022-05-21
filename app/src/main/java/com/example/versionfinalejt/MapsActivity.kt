@@ -1,24 +1,21 @@
 package com.example.versionfinalejt
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-
-
-import com.example.versionfinalejt.R
-
-import com.example.versionfinalejt.databinding.ActivityMapsBinding
 import com.example.versionfinalejt.api.StationVelibService
+import com.example.versionfinalejt.databinding.ActivityMapsBinding
 import com.example.versionfinalejt.model.MarkerHolder
-
+import com.example.versionfinalejt.model.StationVelib
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-
-import com.example.versionfinalejt.model.StationVelib
 import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.runBlocking
@@ -27,10 +24,12 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
+
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     val listStationVelib: MutableList<StationVelib> = mutableListOf()
     val markerHolderMap = HashMap<String, MarkerHolder>()
+    val favoris: ArrayList<StationVelib> = ArrayList()
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
@@ -49,6 +48,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        findViewById<Button>(R.id.home_list_favoris).setOnClickListener{
+            val intent = Intent(this,ListFavorisActivity::class.java)
+            intent.putExtra("listFavoris",favoris)
+            startActivity(intent)
+
+        }
+
+
     }
     private val bicycleIcon: BitmapDescriptor by lazy {
         val color = ContextCompat.getColor(this, R.color.colorPrimary)
@@ -60,11 +68,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.setLatLngBoundsForCameraTarget(ileDeFranceBounds)
         mMap.setMinZoomPreference(9.7f)
 
-
         synchroApi()
         addMarker()
 
         mMap.setInfoWindowAdapter(CustomInfoWindowAdapter(this,markerHolderMap))
+
+        mMap.setOnMarkerClickListener { marker ->
+            val markerName = marker.title
+            findViewById<Button>(R.id.home_add_favoris).setOnClickListener{
+                val idStation = marker.snippet
+                val stationFav = listStationVelib.find {it.station_id.toString()==idStation}
+                if (stationFav != null) {
+                    favoris.add(stationFav)
+                    Toast.makeText(this@MapsActivity, "La station $markerName a été ajouté aux favoris", Toast.LENGTH_SHORT).show()
+                }
+            }
+            false
+        }
 
     }
 
@@ -88,13 +108,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             val resultLieu = service.getLieuStation()
             val resultStatus = service.getStatusStation()
 
-
             val stationsLieu = resultLieu.data.stations
             val stationsStatus = resultStatus.data.stations
 
-            for (i in stationsLieu) {
-                for (j in stationsStatus) {
-                    if (i.station_id == j.station_id) {
+            for(i in stationsLieu){
+                for(j in stationsStatus){
+                    if(i.station_id==j.station_id){
 
                         val stationVelib = StationVelib(
                             i.station_id,
@@ -111,21 +130,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
         }
-    }
-        private fun addMarker(){
 
-            listStationVelib.map{
-                val coordoneeStation = LatLng(it.lat.toDouble(), it.lon.toDouble())
-                val marker = mMap.addMarker(
-                    MarkerOptions()
-                        .position(coordoneeStation)
-                        .title(it.name)
-                        .snippet(it.station_id.toString())
-                        .icon(bicycleIcon)
-                )
-                val mHolder=MarkerHolder(it.lat,it.lon,it.capacity,it.nbrVelosDispo,it.nbrDockDispo)
-                markerHolderMap.put(marker!!.id, mHolder);
-            }
+    }
+
+    private fun addMarker(){
+
+        listStationVelib.map{
+            val coordoneeStation = LatLng(it.lat.toDouble(), it.lon.toDouble())
+            val marker = mMap.addMarker(
+                MarkerOptions()
+                    .position(coordoneeStation)
+                    .title(it.name)
+                    .snippet(it.station_id.toString())
+                    .icon(bicycleIcon)
+            )
+            val mHolder=MarkerHolder(it.lat,it.lon,it.capacity,it.nbrVelosDispo,it.nbrDockDispo)
+            markerHolderMap.put(marker!!.id, mHolder);
         }
+    }
 
 }
