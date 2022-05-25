@@ -29,6 +29,8 @@
         <activity
             android:name=".ListFavorisActivity"
             android:exported="true"/>
+        <activity android:name=".DetailsStationVelibActivity"
+            android:exported="true"/>
     </application>
 
 </manifest>

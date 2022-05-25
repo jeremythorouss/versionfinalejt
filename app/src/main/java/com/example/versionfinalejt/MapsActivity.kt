@@ -4,9 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.room.Room
 import com.example.versionfinalejt.api.StationVelibService
+import com.example.versionfinalejt.database.AppDatabase
 import com.example.versionfinalejt.databinding.ActivityMapsBinding
 import com.example.versionfinalejt.model.MarkerHolder
 import com.example.versionfinalejt.model.StationVelib
@@ -14,22 +17,20 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptor
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.net.UnknownHostException
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     val listStationVelib: MutableList<StationVelib> = mutableListOf()
     val markerHolderMap = HashMap<String, MarkerHolder>()
-    val favoris: ArrayList<StationVelib> = ArrayList()
+    //val favoris: ArrayList<StationVelib> = ArrayList()
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
@@ -51,7 +52,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         findViewById<Button>(R.id.home_list_favoris).setOnClickListener{
             val intent = Intent(this,ListFavorisActivity::class.java)
-            intent.putExtra("listFavoris",favoris)
+            //intent.putExtra("listFavoris",favoris)
             startActivity(intent)
 
         }
@@ -68,21 +69,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.setLatLngBoundsForCameraTarget(ileDeFranceBounds)
         mMap.setMinZoomPreference(9.7f)
 
-        synchroApi()
+        try {
+            synchroApi()
+        }catch (e: UnknownHostException){
+            val alertDialogBuilder = AlertDialog.Builder(this)
+            alertDialogBuilder.setMessage("Pas de connexion, les données velib ne sont pas accessibles ! Accès seulement à la liste des favoris !")
+            alertDialogBuilder.setPositiveButton("Yes"){ _, _ ->
+                //finish()
+            }
+            alertDialogBuilder.show()
+        }
+
         addMarker()
 
         mMap.setInfoWindowAdapter(CustomInfoWindowAdapter(this,markerHolderMap))
 
         mMap.setOnMarkerClickListener { marker ->
-            val markerName = marker.title
-            findViewById<Button>(R.id.home_add_favoris).setOnClickListener{
-                val idStation = marker.snippet
-                val stationFav = listStationVelib.find {it.station_id.toString()==idStation}
-                if (stationFav != null) {
-                    favoris.add(stationFav)
-                    Toast.makeText(this@MapsActivity, "La station $markerName a été ajouté aux favoris", Toast.LENGTH_SHORT).show()
-                }
-            }
+            saveFav(marker)
             false
         }
 
@@ -147,6 +150,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             val mHolder=MarkerHolder(it.lat,it.lon,it.capacity,it.nbrVelosDispo,it.nbrDockDispo)
             markerHolderMap.put(marker!!.id, mHolder);
         }
+    }
+    private fun saveFav(marker: Marker){
+        val markerName = marker.title
+        findViewById<Button>(R.id.home_add_favoris).setOnClickListener{
+            val idStation = marker.snippet
+            val stationFav = listStationVelib.find {it.station_id.toString()==idStation}
+            if (stationFav != null) {
+                //favoris.add(stationFav)
+                Toast.makeText(this@MapsActivity, "La station $markerName a été ajouté aux favoris", Toast.LENGTH_SHORT).show()
+
+                val db = Room.databaseBuilder(
+                    applicationContext,
+                    AppDatabase::class.java, "database-name"
+                ).allowMainThreadQueries().build()
+
+                val velibDao = db.stationvelibDao()
+                velibDao.insertStation(stationFav)
+            }
+        }
+
     }
 
 }
