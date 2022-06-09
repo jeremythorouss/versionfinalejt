@@ -1,7 +1,7 @@
 package com.example.versionfinalejt.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.io.Serializable
+
 @Entity
 data class StationVelib(
     @PrimaryKey val station_id:Long,
@@ -11,5 +11,5 @@ data class StationVelib(
     val capacity:Int,
     val nbrVelosDispo :Int,
     val nbrDockDispo:Int,
-)//: Serializable
+)
 

@@ -1,6 +1,6 @@
 package com.example.versionfinalejt.api
 
-import com.example.versionfinalejt.model.StationVelib
+
 import retrofit2.http.GET
 
 interface StationVelibService {

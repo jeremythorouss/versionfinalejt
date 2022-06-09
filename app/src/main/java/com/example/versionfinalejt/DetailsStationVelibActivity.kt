@@ -1,14 +1,13 @@
 package com.example.versionfinalejt
 
-import android.content.Intent
+
 import android.os.Bundle
-import android.provider.MediaStore
-import android.widget.ImageView
+
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import com.example.versionfinalejt.database.AppDatabase
-import com.example.versionfinalejt.R
+
 
 private const val TAG = "DetailsStationVelibActivity"
 

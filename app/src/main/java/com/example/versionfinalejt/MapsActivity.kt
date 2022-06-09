@@ -30,7 +30,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     val listStationVelib: MutableList<StationVelib> = mutableListOf()
     val markerHolderMap = HashMap<String, MarkerHolder>()
-    //val favoris: ArrayList<StationVelib> = ArrayList()
+
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
@@ -52,7 +52,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         findViewById<Button>(R.id.home_list_favoris).setOnClickListener{
             val intent = Intent(this,ListFavorisActivity::class.java)
-            //intent.putExtra("listFavoris",favoris)
+
             startActivity(intent)
 
         }
