@@ -13,6 +13,7 @@ interface StationVelibService {
 }
 
 
+
 data class GetLieuStationResult(val data:StationsLieuResult)
 data class StationsLieuResult(val stations : List<StationVelibLieu>)
 data class StationVelibLieu(val station_id:Long, val name:String, val lat:Float, val lon:Float, val capacity:Int)
