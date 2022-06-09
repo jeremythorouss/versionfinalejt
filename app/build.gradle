@@ -87,4 +87,5 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
     kapt "com.android.databinding:compiler:3.2.0-alpha10"
 
+
 }
