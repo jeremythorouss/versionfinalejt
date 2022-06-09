@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.widget.TextView
+import androidx.core.view.isGone
 import com.example.versionfinalejt.model.MarkerHolder
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
@@ -32,7 +33,7 @@ class CustomInfoWindowAdapter(context: Context, val markerHolderMap : HashMap<St
         tvCapacity.text= mHolder!!.capacity.toString()
         tvNbrVelosDispo.text=mHolder!!.nbrVelosDispo.toString()
         tvNbrDockDispo.text=mHolder!!.nbrDockDispo.toString()
-
+        tvSnippet.setVisibility(View.GONE)
     }
 
     override fun getInfoContents(marker: Marker): View {

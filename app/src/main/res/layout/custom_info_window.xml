@@ -10,7 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFBB86FC"
+        android:background="#ffbb86"
         android:orientation="vertical">
 
         <TextView
@@ -102,18 +102,7 @@
                 android:textSize="14sp" />
         </LinearLayout>
 
-        <!--<ImageButton
-            android:id="@+id/infoWindowButton"
-            style="@style/Widget.AppCompat.ImageButton"
-            android:layout_width="100dp"
-            android:layout_height="35dp"
-            android:layout_gravity="center_horizontal"
-            android:alpha="0.9"
-            android:backgroundTint="#858585"
-            android:clickable="true"
-            android:elevation="30dp"
-            android:scaleType="fitCenter"
-            android:src="@android:drawable/btn_star_big_on" />-->
+
     </LinearLayout>
 
 
