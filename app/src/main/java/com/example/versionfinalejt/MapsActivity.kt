@@ -12,12 +12,15 @@ import com.example.versionfinalejt.api.StationVelibService
 import com.example.versionfinalejt.database.AppDatabase
 import com.example.versionfinalejt.databinding.ActivityMapsBinding
 import com.example.versionfinalejt.model.MarkerHolder
+import com.example.versionfinalejt.model.Place
+import com.example.versionfinalejt.model.PlaceRenderer
 import com.example.versionfinalejt.model.StationVelib
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.maps.android.clustering.ClusterManager
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -58,6 +61,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
 
+
     }
     private val bicycleIcon: BitmapDescriptor by lazy {
         val color = ContextCompat.getColor(this, R.color.colorPrimary)
@@ -79,8 +83,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             alertDialogBuilder.show()
         }
-
+        addClusteredMarkers(googleMap)
         addMarker()
+
 
         mMap.setInfoWindowAdapter(CustomInfoWindowAdapter(this,markerHolderMap))
 
@@ -170,6 +175,30 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
+    }
+    /**
+     * Adds markers to the map with clustering support.
+     */
+    private fun addClusteredMarkers(googleMap: GoogleMap) {
+        // Create the ClusterManager class and set the custom renderer.
+        val clusterManager = ClusterManager<Place>(this, googleMap)
+        clusterManager.renderer =
+            PlaceRenderer(
+                this,
+                googleMap,
+                clusterManager
+            )
+
+
+        // Add the places to the ClusterManager.
+        clusterManager.addItems(place)
+        clusterManager.cluster()
+
+        // Set ClusterManager as the OnCameraIdleListener so that it
+        // can re-cluster when zooming in and out.
+        googleMap.setOnCameraIdleListener {
+            clusterManager.onCameraIdle()
+        }
     }
 
 }
